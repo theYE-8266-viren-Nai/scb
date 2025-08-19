@@ -1,9 +1,9 @@
 package com.studentCommunityBasedPlatform.scb.Auth;
 
-import com.studentCommunityBasedPlatform.scb.Security.user.Config.JwtService;
-import com.studentCommunityBasedPlatform.scb.Security.user.entity.Role;
-import com.studentCommunityBasedPlatform.scb.Security.user.entity.User;
-import com.studentCommunityBasedPlatform.scb.Security.user.repository.UserRepository;
+import com.studentCommunityBasedPlatform.scb.config.JwtService;
+import com.studentCommunityBasedPlatform.scb.entity.Role;
+import com.studentCommunityBasedPlatform.scb.entity.User;
+import com.studentCommunityBasedPlatform.scb.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

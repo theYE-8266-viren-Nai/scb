@@ -1,4 +1,4 @@
-package com.studentCommunityBasedPlatform.scb.Security.user.entity;
+package com.studentCommunityBasedPlatform.scb.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

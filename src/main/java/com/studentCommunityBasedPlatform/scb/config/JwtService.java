@@ -1,4 +1,4 @@
-package com.studentCommunityBasedPlatform.scb.Security.user.Config;
+package com.studentCommunityBasedPlatform.scb.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,8 +1,4 @@
-// =============================================================================
-// UPDATE YOUR SecurityConfig.java - CORS Configuration
-// =============================================================================
-
-package com.studentCommunityBasedPlatform.scb.Security.user.Config;
+package com.studentCommunityBasedPlatform.scb.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,17 +22,18 @@ public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthFilter;
 	private final AuthenticationProvider authenticationProvider;
-
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.cors()  // 🎯 Enable CORS
+				.cors()
 				.and()
 				.csrf()
 				.disable()
 				.authorizeHttpRequests()
 				.requestMatchers("/api/auth/**")
 				.permitAll()
+				.requestMatchers("/api/posts/**").permitAll()  // 🧪 TEMPORARY - Make public
+				.requestMatchers("/api/groups/**").permitAll() // 🧪 TEMPORARY - Make public
 				.anyRequest()
 				.authenticated()
 				.and()
@@ -48,35 +45,25 @@ public class SecurityConfig {
 
 		return http.build();
 	}
-
-	// 🌐 UPDATED CORS Configuration for Vite
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		// 🎯 ALLOW VITE DEV SERVER (PORT 5173)
 		configuration.setAllowedOriginPatterns(Arrays.asList(
-				"http://localhost:5173",    // 🎯 Vite default port
-				"http://127.0.0.1:5173",    // Alternative localhost
-				"http://localhost:3000",    // Create React App (backup)
-				"http://localhost:3001"     // Alternative ports
+				"http://localhost:5173",
+				"http://127.0.0.1:5173",
+				"http://localhost:3000",
+				"http://localhost:3001"
 		));
 
-		// Allow these HTTP methods
 		configuration.setAllowedMethods(Arrays.asList(
 				"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
 		));
 
-		// Allow all headers
 		configuration.setAllowedHeaders(Arrays.asList("*"));
-
-		// Allow credentials (for JWT tokens)
 		configuration.setAllowCredentials(true);
-
-		// Cache preflight response for 1 hour
 		configuration.setMaxAge(3600L);
 
-		// Apply to all API endpoints
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/api/**", configuration);
 

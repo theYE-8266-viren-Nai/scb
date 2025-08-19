@@ -1,6 +1,6 @@
-package com.studentCommunityBasedPlatform.scb.Security.user.repository;
+package com.studentCommunityBasedPlatform.scb.repository;
 
-import com.studentCommunityBasedPlatform.scb.Security.user.entity.User;
+import com.studentCommunityBasedPlatform.scb.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
