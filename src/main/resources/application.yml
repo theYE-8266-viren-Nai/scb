@@ -1,3 +1,5 @@
+# Add these to your existing application.yml file
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/scb
@@ -13,3 +15,18 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  
+  # File upload configuration
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+      enabled: true
+
+# Server configuration
+server:
+  port: 8080
+
+# Custom file storage configuration
+file:
+  upload-dir: uploads

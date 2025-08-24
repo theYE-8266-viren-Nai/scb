@@ -194,6 +194,23 @@ public class UserController {
 		return ResponseEntity.ok(activity);
 	}
 
+	// ==================== PROFILE VIEW TRACKING ====================
+
+	@PostMapping("/{userId}/view")
+	public ResponseEntity<Map<String, String>> incrementProfileView(
+			@PathVariable Integer userId,
+			Authentication authentication) {
+		User currentUser = (User) authentication.getPrincipal();
+
+		// Don't increment views for own profile
+		if (currentUser.getId().equals(userId)) {
+			return ResponseEntity.ok(Map.of("message", "Cannot view own profile"));
+		}
+
+		userService.incrementProfileView(userId, currentUser.getId());
+		return ResponseEntity.ok(Map.of("message", "Profile view recorded"));
+	}
+
 	// ==================== ACCOUNT MANAGEMENT ====================
 
 	@PostMapping("/account/deactivate")

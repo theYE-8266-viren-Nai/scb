@@ -20,6 +20,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final FileStorageService fileStorageService;
 
 	// ==================== PROFILE MANAGEMENT ====================
 
@@ -82,19 +83,36 @@ public class UserService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		// TODO: Implement actual file upload logic
-		String filename = "avatar_" + userId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-		user.setAvatarUrl("/uploads/avatars/" + filename);
+		try {
+			// Delete old avatar if exists
+			if (user.getAvatarUrl() != null) {
+				fileStorageService.deleteFile(user.getAvatarUrl());
+			}
 
-		User savedUser = userRepository.save(user);
-		return mapToUserProfileResponse(savedUser);
+			// Save new avatar
+			String fileUrl = fileStorageService.saveFile(file, "avatars", "avatar_" + userId);
+			user.setAvatarUrl(fileUrl);
+
+			User savedUser = userRepository.save(user);
+			System.out.println("✅ Avatar uploaded successfully for user " + userId + ": " + fileUrl);
+
+			return mapToUserProfileResponse(savedUser);
+		} catch (Exception e) {
+			System.err.println("❌ Error uploading avatar for user " + userId + ": " + e.getMessage());
+			throw new RuntimeException("Failed to upload avatar: " + e.getMessage());
+		}
 	}
 
 	public UserProfileResponse deleteAvatar(Integer userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		user.setAvatarUrl(null);
+		if (user.getAvatarUrl() != null) {
+			fileStorageService.deleteFile(user.getAvatarUrl());
+			user.setAvatarUrl(null);
+			System.out.println("✅ Avatar deleted successfully for user " + userId);
+		}
+
 		User savedUser = userRepository.save(user);
 		return mapToUserProfileResponse(savedUser);
 	}
@@ -103,19 +121,36 @@ public class UserService {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		// TODO: Implement actual file upload logic
-		String filename = "cover_" + userId + "_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
-		user.setCoverPhotoUrl("/uploads/covers/" + filename);
+		try {
+			// Delete old cover photo if exists
+			if (user.getCoverPhotoUrl() != null) {
+				fileStorageService.deleteFile(user.getCoverPhotoUrl());
+			}
 
-		User savedUser = userRepository.save(user);
-		return mapToUserProfileResponse(savedUser);
+			// Save new cover photo
+			String fileUrl = fileStorageService.saveFile(file, "covers", "cover_" + userId);
+			user.setCoverPhotoUrl(fileUrl);
+
+			User savedUser = userRepository.save(user);
+			System.out.println("✅ Cover photo uploaded successfully for user " + userId + ": " + fileUrl);
+
+			return mapToUserProfileResponse(savedUser);
+		} catch (Exception e) {
+			System.err.println("❌ Error uploading cover photo for user " + userId + ": " + e.getMessage());
+			throw new RuntimeException("Failed to upload cover photo: " + e.getMessage());
+		}
 	}
 
 	public UserProfileResponse deleteCoverPhoto(Integer userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("User not found"));
 
-		user.setCoverPhotoUrl(null);
+		if (user.getCoverPhotoUrl() != null) {
+			fileStorageService.deleteFile(user.getCoverPhotoUrl());
+			user.setCoverPhotoUrl(null);
+			System.out.println("✅ Cover photo deleted successfully for user " + userId);
+		}
+
 		User savedUser = userRepository.save(user);
 		return mapToUserProfileResponse(savedUser);
 	}
@@ -334,6 +369,24 @@ public class UserService {
 				.skip(page * size)
 				.limit(size)
 				.collect(Collectors.toList());
+	}
+
+	// ==================== PROFILE VIEW TRACKING ====================
+
+	public void incrementProfileView(Integer userId, Integer viewerId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
+		// Don't increment if viewing own profile
+		if (userId.equals(viewerId)) {
+			return;
+		}
+
+		// Only increment once per day per viewer (optional enhancement)
+		user.incrementProfileViews();
+		userRepository.save(user);
+
+		System.out.println("👁️ Profile view incremented for user " + userId + " by viewer " + viewerId);
 	}
 
 	// ==================== ACCOUNT MANAGEMENT ====================

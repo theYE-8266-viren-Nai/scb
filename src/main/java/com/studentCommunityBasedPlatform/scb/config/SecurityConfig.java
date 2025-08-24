@@ -22,6 +22,7 @@ public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthFilter;
 	private final AuthenticationProvider authenticationProvider;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
@@ -30,10 +31,10 @@ public class SecurityConfig {
 				.csrf()
 				.disable()
 				.authorizeHttpRequests()
-				.requestMatchers("/api/auth/**")
-				.permitAll()
+				.requestMatchers("/api/auth/**").permitAll()
 				.requestMatchers("/api/posts/**").permitAll()  // 🧪 TEMPORARY - Make public
 				.requestMatchers("/api/groups/**").permitAll() // 🧪 TEMPORARY - Make public
+				.requestMatchers("/uploads/**").permitAll()    // ✅ ADDED - Allow static file access
 				.anyRequest()
 				.authenticated()
 				.and()
@@ -45,6 +46,7 @@ public class SecurityConfig {
 
 		return http.build();
 	}
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
@@ -66,6 +68,8 @@ public class SecurityConfig {
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/api/**", configuration);
+		// Also register CORS for uploads
+		source.registerCorsConfiguration("/uploads/**", configuration);
 
 		return source;
 	}
