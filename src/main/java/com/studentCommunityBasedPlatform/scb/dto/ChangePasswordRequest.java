@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Size;
 @AllArgsConstructor
 public class ChangePasswordRequest {
 
-	@NotBlank(message = "Current password is required")
+	@NotBlank(message = "Current password is requireddddddd")
 	private String currentPassword;
 
 	@NotBlank(message = "New password is required")
